@@ -31,7 +31,7 @@ setup(
         "optimization",
     ],
     install_requires=[
-        "torch>=1.5.0",
+        "torch=1.5.0",
         "torchvision",
         "kornia<=0.4.1",
         "tqdm",
@@ -44,7 +44,7 @@ setup(
         "pytest-mock",
         "coverage",
         "coveralls",
-        "scikit-learn"
+        "scikit-learn",
     ],
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
