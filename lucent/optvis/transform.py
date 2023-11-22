@@ -43,7 +43,12 @@ def pad(w, mode="reflect", constant_value=0.5):
         constant_value = 0
 
     def inner(image_t):
-        return F.pad(image_t, [w] * 4, mode=mode, value=constant_value,)
+        return F.pad(
+            image_t,
+            [w] * 4,
+            mode=mode,
+            value=constant_value,
+        )
 
     return inner
 
@@ -58,7 +63,8 @@ def random_scale(scales):
         upsample = torch.nn.Upsample(
             size=scale_shape, mode="bilinear", align_corners=True
         )
-        return F.pad(upsample(image_t), [pad_y, pad_x] * 2)
+        up_image_t = upsample(image_t)
+        return F.pad(up_image_t, (pad_y, pad_x) * 2)
 
     return inner
 
@@ -69,7 +75,7 @@ def random_rotate(angles, units="degrees"):
         # kornia takes degrees
         alpha = _rads2angle(np.random.choice(angles), units)
         angle = torch.ones(b) * alpha
-        if KORNIA_VERSION < '0.4.0':
+        if KORNIA_VERSION < "0.4.0":
             scale = torch.ones(b)
         else:
             scale = torch.ones(b, 2)
@@ -123,6 +129,7 @@ def preprocess_inceptionv1():
     return lambda x: x * 255 - 117
 
 
+# TODO What is the point of this?
 standard_transforms = [
     pad(12, mode="constant", constant_value=0.5),
     jitter(8),
@@ -130,3 +137,10 @@ standard_transforms = [
     random_rotate(list(range(-10, 11)) + 5 * [0]),
     jitter(4),
 ]
+
+
+def flatten():
+    def inner(image_t):
+        return image_t.view(image_t.shape[0], -1)
+
+    return inner
